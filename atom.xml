@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fengcommon.github.io/"/>
-  <updated>2017-08-25T11:50:06.000Z</updated>
+  <updated>2017-08-25T12:55:26.000Z</updated>
   <id>https://fengcommon.github.io/</id>
   
   <author>
@@ -20,11 +20,12 @@
     <link href="https://fengcommon.github.io/2017/10/10/History/"/>
     <id>https://fengcommon.github.io/2017/10/10/History/</id>
     <published>2017-10-09T16:00:00.000Z</published>
-    <updated>2017-08-25T11:50:06.000Z</updated>
+    <updated>2017-08-25T12:55:26.000Z</updated>
     
     <content type="html"><![CDATA[<h1 id="0-4-1-2014-08-26"><a href="#0-4-1-2014-08-26" class="headerlink" title="0.4.1 / 2014-08-26"></a>0.4.1 / 2014-08-26</h1><ul>
 <li>fixed #7  使用标题作为anchor，感谢chanble和oldfeel</li>
 </ul>
+<a id="more"></a>
 <h1 id="0-1-0-2014-01-26"><a href="#0-1-0-2014-01-26" class="headerlink" title="0.1.0 / 2014-01-26"></a>0.1.0 / 2014-01-26</h1><ul>
 <li>updated docs/site</li>
 <li>added readme</li>
@@ -55,12 +56,11 @@
     <summary type="html">
     
       &lt;h1 id=&quot;0-4-1-2014-08-26&quot;&gt;&lt;a href=&quot;#0-4-1-2014-08-26&quot; class=&quot;headerlink&quot; title=&quot;0.4.1 / 2014-08-26&quot;&gt;&lt;/a&gt;0.4.1 / 2014-08-26&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;fixe
+&lt;li&gt;fixed #7  使用标题作为anchor，感谢chanble和oldfeel&lt;/li&gt;
+&lt;/ul&gt;
     
     </summary>
     
-    
-      <category term="hhh" scheme="https://fengcommon.github.io/tags/hhh/"/>
     
   </entry>
   
