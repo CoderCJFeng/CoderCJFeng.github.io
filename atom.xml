@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fengcommon.github.io/"/>
-  <updated>2017-08-31T08:32:12.000Z</updated>
+  <updated>2017-09-20T08:04:43.000Z</updated>
   <id>https://fengcommon.github.io/</id>
   
   <author>
@@ -16,52 +16,115 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>七夕快乐</title>
-    <link href="https://fengcommon.github.io/2017/08/25/hello-world/"/>
-    <id>https://fengcommon.github.io/2017/08/25/hello-world/</id>
-    <published>2017-08-25T03:15:57.000Z</published>
-    <updated>2017-08-31T08:32:12.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>##七夕快乐<br>赛打死哦到底dio </p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;##七夕快乐&lt;br&gt;赛打死哦到底dio &lt;/p&gt;
-
-    
-    </summary>
-    
-      <category term="Hexo教程" scheme="https://fengcommon.github.io/categories/Hexo%E6%95%99%E7%A8%8B/"/>
-    
-    
-      <category term="七夕" scheme="https://fengcommon.github.io/tags/%E4%B8%83%E5%A4%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>title1111</title>
-    <link href="https://fengcommon.github.io/2016/06/01/Hexo%E6%95%99%E7%A8%8B/"/>
-    <id>https://fengcommon.github.io/2016/06/01/Hexo教程/</id>
+    <title>探究iOS签名机制</title>
+    <link href="https://fengcommon.github.io/2016/06/01/%E6%8E%A2%E7%A9%B6iOS%E7%AD%BE%E5%90%8D%E6%9C%BA%E5%88%B6/"/>
+    <id>https://fengcommon.github.io/2016/06/01/探究iOS签名机制/</id>
     <published>2016-06-01T15:47:44.000Z</published>
-    <updated>2017-08-31T08:33:05.000Z</updated>
+    <updated>2017-09-20T08:04:43.000Z</updated>
     
-    <content type="html"><![CDATA[<p>#sdakkskd</p>
-<p>###sjdajla;asda</p>
+    <content type="html"><![CDATA[<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png" alt="概念"></p>
+<p>iOS 签名机制比较复杂，各种证书，<strong>Provisioning Profile，entitlements，CertificateSigningRequest，p12，AppID，</strong>概念很多，也很容易出错，今天就讲讲这方面德一些东西，希望能有助于理解 iOS App 签名的原理和流程。</p>
+<p>####签名目的</p>
+<p>苹果确保iOS平台对app有绝对的控制权，app只有通过其官方认证才能安装，以此确保app的版权及安全</p>
+<h4 id="签名原理"><a href="#签名原理" class="headerlink" title="签名原理"></a>签名原理</h4><p>#####非对称加密</p>
+<blockquote>
+<ul>
+<li><p>选两个质数 p 和 q，相乘得出一个大整数n，例如 p = 61，q = 53，n = pq = 3233</p>
+</li>
+<li><p>选 1-n 间的随便一个质数e，例如 e = 17</p>
+</li>
+<li><p>经过一系列数学公式，算出一个数字 d，满足：</p>
+<p>a.通过 n 和 e 这两个数据一组数据进行数学运算后，可以通过 n 和 d 去反解运算，反过来也可以。</p>
+<p>b.如果只知道 n 和 e，要推导出 d，需要知道 p 和 q，也就是要需要把 n 因数分解。</p>
+</li>
+</ul>
+</blockquote>
+<p>上述的 (n,e) 这两个数据在一起就是公钥，(n,d) 这两个数据就是私钥，满足用私钥加密，公钥解密，或反过来公钥加密，私钥解密，也满足在只暴露公钥 (只知道 n 和 e)的情况下，要推导出私钥 (n,d)，需要把大整数 n 因数分解。目前因数分解只能靠暴力穷举，而 n 数字越大，越难以用穷举计算出因数 p 和 q，也就越安全，当 n 大到二进制 1024 位或 2048 位时，以目前技术要破解几乎不可能，所以非常安全。</p>
+<p>#####签名过程</p>
+<p>通常我们说的签名就是指数字签名，它是基于非对称加密算法实现的。对指定内容使用哈希算法(一般是MD5)，得到一个固定长度的信息摘要，然后再使用私钥（注意必须是私钥）对该摘要加密，就得到了数字签名。</p>
+<p>简单理解就是我对某一份数据打个标记，表示我认可了这份数据（签了个名），然后我发送给其他人，其他人可以知道这份数据是经过我认证的，数据没有被篡改过。</p>
+<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/数字签名过程.png" alt="数字签名过程"></p>
+<blockquote>
+<ul>
+<li><p>首先用一种算法，算出原始数据的摘要。需满足</p>
+<p>a.若原始数据有任何变化，计算出来的摘要.值都会变化。<br>b.摘要要够短。这里最常用的算法是MD5。</p>
+</li>
+<li><p>生成一份非对称加密的公钥和私钥，私钥我自己拿着，公钥公布出去。</p>
+</li>
+<li><p>对一份数据，算出摘要后，用私钥加密这个摘要，得到一份加密后的数据，称为原始数据的签名。把它跟原始数据一起发送给用户。</p>
+</li>
+<li><p>用户收到数据和签名后，用公钥解密得到摘要。同时用户用同样的算法计算原始数据的摘要，对比这里计算出来的摘要和用公钥解密签名得到的摘要是否相等，若相等则表示这份数据中途没有被篡改过，因为如果篡改过，摘要会变化。</p>
+</li>
+</ul>
+</blockquote>
+<p>之所以要有第一步计算摘要，是因为非对称加密的原理限制可加密的内容不能太大（不能大于上述 n 的位数，也就是一般不能大于 1024 位 / 2048 位），于是若要对任意大的数据签名，就需要改成对它的特征值签名，效果是一样的。</p>
+<h4 id="签名应用场景"><a href="#签名应用场景" class="headerlink" title="签名应用场景"></a>签名应用场景</h4><p>在苹果手机上安装一个 App可以有四种方式：</p>
+<blockquote>
+<ul>
+<li>开发完上传到AppStore，从 AppStore 下载安装到手机。</li>
+<li>开发 App 时可以直接把开发中的应用安装进手机进行调试。</li>
+<li>In-House 企业内部分发，可以直接安装企业证书签名后的 APP。</li>
+<li>AD-Hoc 相当于企业分发的限制版，限制安装设备数量。</li>
+</ul>
+</blockquote>
+<p>#####通过AppStore安装场景</p>
+<p>要实现这个需求很简单，最直接的方式，苹果官方生成一对公私钥，在 iOS 设备里内置一个公钥，私钥由苹果后台保存，我们传 App 上 AppStore 时，苹果后台用私钥对 APP 数据进行签名，iOS 设备下载这个 APP 后，用公钥验证这个签名，若签名正确，这个 APP 肯定是由苹果后台认证的，并且没有被修改过，也就达到了苹果的需求：保证安装的每一个 APP 都是经过苹果官方允许的。</p>
+<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/上传Appstore签名过程.png" alt="上传Appstore签名过程"></p>
+<p>#####通过其他方式安装场景</p>
+<p>对于后面三种方式安装的 App 方式，苹果要进行控制，就有了新的需求，无法像上面这样简单了。对于开发时安装APP，它有两个需求：</p>
+<blockquote>
+<ul>
+<li><p>安装包不需要传到苹果服务器，可以直接安装到手机上。如果你编译一个 APP 到手机前要先传到苹果服务器签名，这显然是不能接受的。</p>
+</li>
+<li><p>苹果必须对这里的安装有控制权，包括</p>
+<p>a. 经过苹果允许才可以这样安装。<br>b. 不能被滥用导致非开发app也能被安装。</p>
+</li>
+</ul>
+</blockquote>
+<p>为了实现这些需求，iOS 签名的复杂度也就开始增加了。</p>
+<p>苹果这里给出的方案是使用了双层签名，会比较绕，流程大概是这样的：</p>
+<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign2.png" alt="sign2"></p>
+<blockquote>
+<ul>
+<li>在你的 Mac 开发机器生成一对公私钥，这里称为<strong>公钥L</strong>，<strong>私钥L</strong>。L:Local</li>
+<li>苹果自己有固定的一对公私钥，跟上面 AppStore 例子一样，私钥在苹果后台，公钥在每个 iOS 设备上。这里称为<strong>公钥A</strong>，<strong>私钥A</strong>。A:Apple</li>
+<li>把公钥 L 传到苹果后台，用苹果后台里的私钥 A 去签名公钥 L。得到一份数据包含了公钥 L 以及其签名，把这份数据称为证书。</li>
+<li>在开发时，编译完一个 APP 后，用本地的私钥 L 对这个 APP 进行签名，同时把第三步得到的证书一起打包进 APP 里，安装到手机上。</li>
+<li>在安装时，iOS 系统取得证书，通过系统内置的公钥 A，去验证证书的数字签名是否正确。</li>
+<li>验证证书后确保了公钥 L 是苹果认证过的，再用公钥 L 去验证 APP 的签名，这里就间接验证了这个 APP 安装行为是否经过苹果官方允许。（这里只验证安装行为，不验证APP 是否被改动，因为开发阶段 APP 内容总是不断变化的，苹果不需要管。）</li>
+</ul>
+</blockquote>
+<p>上述流程只解决了上面第一个需求，也就是需要经过苹果允许才可以安装，还未解决第二个避免被滥用的问题。怎么解决呢？苹果再加了两个限制，一是限制在苹果后台注册过的设备才可以安装，二是限制签名只能针对某一个具体的 APP。<br>怎么加的？在上述第三步，苹果用私钥 A 签名我们本地公钥 L 时，实际上除了签名公钥 L，还可以加上无限多数据，这些数据都可以保证是经过苹果官方认证的，不会有被篡改的可能。</p>
+<p>可以想到把 允许安装的设备 ID 列表 和 App对应的 AppID 等数据，都在第三步这里跟公钥L一起组成证书，再用苹果私钥 A 对这个证书签名。在最后第 5 步验证时就可以拿到设备 ID 列表，判断当前设备是否符合要求。根据数字签名的原理，只要数字签名通过验证，第 5 步这里的设备 IDs / AppID / 公钥 L 就都是经过苹果认证的，无法被修改，苹果就可以限制可安装的设备和 APP，避免滥用。</p>
+<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign3.png" alt="sign3"></p>
+<p>到这里这个证书已经变得很复杂了，有很多额外信息，实际上除了 设备 ID / AppID，还有其他信息也需要在这里用苹果签名，像这个 APP 里 iCloud / push / 后台运行 等权限苹果都想控制，苹果把这些权限开关统一称为<strong> Entitlements</strong>，它也需要通过签名去授权。<br>实际上一个“证书”本来就有规定的格式规范，上面我们把各种额外信息塞入证书里是不合适的，于是苹果另外搞了个东西，叫<strong> Provisioning Profile</strong>，一个 <strong>Provisioning Profile</strong> 里就包含了证书以及上述提到的所有额外信息，以及所有信息的签名。<br>所以整个流程稍微变一下，就变成这样了：</p>
+<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign4.png" alt="sign4"></p>
+<blockquote>
+<ul>
+<li>在你的 Mac 开发机器生成一对公私钥，这里称为公钥L，私钥L。L:Local</li>
+<li>苹果自己有固定的一对公私钥，跟上面 AppStore 例子一样，私钥在苹果后台，公钥在每个 iOS 设备上。这里称为公钥A，私钥A。A:Apple</li>
+<li>把公钥 L 传到苹果后台，用苹果后台里的私钥 A 去签名公钥 L。得到一份数据包含了公钥 L 以及其签名，把这份数据称为证书。</li>
+<li>在苹果后台申请 AppID，配置好设备 ID 列表和 APP 可使用的权限，再加上第③步的证书，组成的数据用私钥 A 签名，把数据和签名一起组成一个<strong> Provisioning Profile </strong>文件，下载到本地 Mac 开发机。</li>
+<li>在开发时，编译完一个 APP 后，用本地的私钥 L 对这个 APP 进行签名，同时把第④步得到的 Provisioning Profile 文件打包进 APP 里，文件名为<strong> embedded.mobileprovision</strong>，把 APP 安装到手机上。</li>
+<li>在安装时，iOS 系统取得证书，通过系统内置的公钥 A，去验证 <strong>embedded.mobileprovision </strong>的数字签名是否正确，里面的证书签名也会再验一遍。</li>
+<li>确保了 <strong>embedded.mobileprovision</strong> 里的数据都是苹果授权以后，就可以取出里面的数据，做各种验证，包括用公钥 L 验证APP签名，验证设备 ID 是否在 ID 列表上，AppID 是否对应得上，权限开关是否跟 APP 里的<strong> Entitlements</strong> 对应等。</li>
+</ul>
+</blockquote>
+<h4 id="概念和操作"><a href="#概念和操作" class="headerlink" title="概念和操作"></a>概念和操作</h4><p>上面的步骤对应到我们平常具体的操作和概念是这样的：<br>第 1 步对应的是 keychain 里的 “从证书颁发机构请求证书”，这里就本地生成了一对公私钥，保存的 <strong>CertificateSigningRequest</strong> 就是公钥，私钥保存在本地电脑里。<br>第 2 步苹果处理，不用管。<br>第 3 步对应把 <strong>CertificateSigningRequest</strong> 传到苹果后台生成证书，并下载到本地。这时本地有两个证书，一个是第 1 步生成的，一个是这里下载回来的，keychain 会把这两个证书关联起来，因为他们公私钥是对应的，在XCode选择下载回来的证书时，实际上会找到 keychain 里对应的私钥去签名。这里私钥只有生成它的这台 Mac 有，如果别的 Mac 也要编译签名这个 App 怎么办？答案是把私钥导出给其他 Mac 用，在<strong> keychain</strong> 里导出私钥，就会存成 .p12 文件，其他 Mac 打开后就导入了这个私钥。<br>第 4 步都是在苹果网站上操作，配置 AppID / 权限 / 设备等，最后下载 <strong>Provisioning Profile</strong> 文件。<br>第 5 步 XCode 会通过第 3 步下载回来的证书（存着公钥），在本地找到对应的私钥（第一步生成的），用本地私钥去签名 App，并把 <strong>Provisioning Profile</strong> 文件命名为 <strong>embedded.mobileprovision</strong> 一起打包进去。这里对 App 的签名数据保存分两部分，Mach-O 可执行文件会把签名直接写入这个文件里，其他资源文件则会保存在 <strong>_CodeSignature</strong> 目录下。</p>
+<p>第 6 – 7 步的打包和验证都是 Xcode 和 iOS 系统自动做的事。<br>这里再总结一下这些概念：<br><strong>证书</strong>：内容是公钥或私钥，由其他机构对其签名组成的数据包。<br><strong>Entitlements</strong>：包含了 App 权限开关列表。<br><strong>CertificateSigningRequest</strong>：本地公钥。<br><strong>p12</strong>：本地私钥，可以导入到其他电脑。<br><strong>Provisioning Profile</strong>：包含了 证书 / Entitlements 等数据，并由苹果后台私钥签名的数据包。</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;#sdakkskd&lt;/p&gt;
-&lt;p&gt;###sjdajla;asda&lt;/p&gt;
-
+      &lt;p&gt;&lt;img src=&quot;/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png&quot; alt=&quot;概念&quot;&gt;&lt;/p&gt;
+&lt;p&gt;iOS 签名机制比较复杂，各种证书，&lt;strong&gt;Provisioning Profile，entitlements，C
     
     </summary>
     
-      <category term="1111ca" scheme="https://fengcommon.github.io/categories/1111ca/"/>
+      <category term="iOS" scheme="https://fengcommon.github.io/categories/iOS/"/>
     
     
-      <category term="1111tag" scheme="https://fengcommon.github.io/tags/1111tag/"/>
+      <category term="签名机制" scheme="https://fengcommon.github.io/tags/%E7%AD%BE%E5%90%8D%E6%9C%BA%E5%88%B6/"/>
     
   </entry>
   

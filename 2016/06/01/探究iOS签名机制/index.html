@@ -79,7 +79,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="签名机制," />
 
 
 
@@ -97,13 +97,25 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="CJFeng&#39;s Blog">
-<meta property="og:url" content="https://fengcommon.github.io/index.html">
+<meta name="description" content="iOS 签名机制比较复杂，各种证书，Provisioning Profile，entitlements，CertificateSigningRequest，p12，AppID，概念很多，也很容易出错，今天就讲讲这方面德一些东西，希望能有助于理解 iOS App 签名的原理和流程。 ####签名目的 苹果确保iOS平台对app有绝对的控制权，app只有通过其官方认证才能安装，以此确保app的版权及">
+<meta name="keywords" content="签名机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探究iOS签名机制">
+<meta property="og:url" content="https://fengcommon.github.io/2016/06/01/探究iOS签名机制/index.html">
 <meta property="og:site_name" content="CJFeng&#39;s Blog">
+<meta property="og:description" content="iOS 签名机制比较复杂，各种证书，Provisioning Profile，entitlements，CertificateSigningRequest，p12，AppID，概念很多，也很容易出错，今天就讲讲这方面德一些东西，希望能有助于理解 iOS App 签名的原理和流程。 ####签名目的 苹果确保iOS平台对app有绝对的控制权，app只有通过其官方认证才能安装，以此确保app的版权及">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/数字签名过程.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/上传Appstore签名过程.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign2.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign3.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign4.png">
+<meta property="og:updated_time" content="2017-09-20T08:04:43.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CJFeng&#39;s Blog">
+<meta name="twitter:title" content="探究iOS签名机制">
+<meta name="twitter:description" content="iOS 签名机制比较复杂，各种证书，Provisioning Profile，entitlements，CertificateSigningRequest，p12，AppID，概念很多，也很容易出错，今天就讲讲这方面德一些东西，希望能有助于理解 iOS App 签名的原理和流程。 ####签名目的 苹果确保iOS平台对app有绝对的控制权，app只有通过其官方认证才能安装，以此确保app的版权及">
+<meta name="twitter:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png">
 
 
 
@@ -133,13 +145,13 @@
 
 
 
-  <link rel="canonical" href="https://fengcommon.github.io/"/>
+  <link rel="canonical" href="https://fengcommon.github.io/2016/06/01/探究iOS签名机制/"/>
 
 
 
 
 
-  <title>CJFeng's Blog</title>
+  <title>探究iOS签名机制 | CJFeng's Blog</title>
   
 
 
@@ -158,8 +170,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <a href="https://fengcommon.github.io"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
@@ -264,9 +275,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -296,9 +307,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/06/01/探究iOS签名机制/" itemprop="url">探究iOS签名机制</a></h1>
+          <h1 class="post-title" itemprop="name headline">探究iOS签名机制</h1>
         
 
         <div class="post-meta">
@@ -370,9 +379,7 @@
       
 
       
-        
-          
-            <p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png" alt="概念"></p>
+        <p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png" alt="概念"></p>
 <p>iOS 签名机制比较复杂，各种证书，<strong>Provisioning Profile，entitlements，CertificateSigningRequest，p12，AppID，</strong>概念很多，也很容易出错，今天就讲讲这方面德一些东西，希望能有助于理解 iOS App 签名的原理和流程。</p>
 <p>####签名目的</p>
 <p>苹果确保iOS平台对app有绝对的控制权，app只有通过其官方认证才能安装，以此确保app的版权及安全</p>
@@ -463,8 +470,6 @@
 <h4 id="概念和操作"><a href="#概念和操作" class="headerlink" title="概念和操作"></a>概念和操作</h4><p>上面的步骤对应到我们平常具体的操作和概念是这样的：<br>第 1 步对应的是 keychain 里的 “从证书颁发机构请求证书”，这里就本地生成了一对公私钥，保存的 <strong>CertificateSigningRequest</strong> 就是公钥，私钥保存在本地电脑里。<br>第 2 步苹果处理，不用管。<br>第 3 步对应把 <strong>CertificateSigningRequest</strong> 传到苹果后台生成证书，并下载到本地。这时本地有两个证书，一个是第 1 步生成的，一个是这里下载回来的，keychain 会把这两个证书关联起来，因为他们公私钥是对应的，在XCode选择下载回来的证书时，实际上会找到 keychain 里对应的私钥去签名。这里私钥只有生成它的这台 Mac 有，如果别的 Mac 也要编译签名这个 App 怎么办？答案是把私钥导出给其他 Mac 用，在<strong> keychain</strong> 里导出私钥，就会存成 .p12 文件，其他 Mac 打开后就导入了这个私钥。<br>第 4 步都是在苹果网站上操作，配置 AppID / 权限 / 设备等，最后下载 <strong>Provisioning Profile</strong> 文件。<br>第 5 步 XCode 会通过第 3 步下载回来的证书（存着公钥），在本地找到对应的私钥（第一步生成的），用本地私钥去签名 App，并把 <strong>Provisioning Profile</strong> 文件命名为 <strong>embedded.mobileprovision</strong> 一起打包进去。这里对 App 的签名数据保存分两部分，Mach-O 可执行文件会把签名直接写入这个文件里，其他资源文件则会保存在 <strong>_CodeSignature</strong> 目录下。</p>
 <p>第 6 – 7 步的打包和验证都是 Xcode 和 iOS 系统自动做的事。<br>这里再总结一下这些概念：<br><strong>证书</strong>：内容是公钥或私钥，由其他机构对其签名组成的数据包。<br><strong>Entitlements</strong>：包含了 App 权限开关列表。<br><strong>CertificateSigningRequest</strong>：本地公钥。<br><strong>p12</strong>：本地私钥，可以导入到其他电脑。<br><strong>Provisioning Profile</strong>：包含了 证书 / Entitlements 等数据，并由苹果后台私钥签名的数据包。</p>
 
-          
-        
       
     </div>
     
@@ -472,6 +477,12 @@
     
 
     <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
       
     </div>
 
@@ -483,14 +494,20 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/签名机制/" rel="tag"># 签名机制</a>
+          
+        </div>
+      
+
+      
+      
+      
 
       
 
       
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -500,10 +517,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -511,6 +529,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -531,8 +553,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -627,6 +658,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#签名原理"><span class="nav-number">1.</span> <span class="nav-text">签名原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#签名应用场景"><span class="nav-number">2.</span> <span class="nav-text">签名应用场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#概念和操作"><span class="nav-number">3.</span> <span class="nav-text">概念和操作</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -760,10 +807,10 @@
 
 
   
-    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
 
-  
+
 
   
 
