@@ -105,17 +105,16 @@
 <meta property="og:site_name" content="CJFeng&#39;s Blog">
 <meta property="og:description" content="iOS 签名机制比较复杂，各种证书，Provisioning Profile，entitlements，CertificateSigningRequest，p12，AppID，概念很多，也很容易出错，今天就讲讲这方面德一些东西，希望能有助于理解 iOS App 签名的原理和流程。 ####签名目的 苹果确保iOS平台对app有绝对的控制权，app只有通过其官方认证才能安装，以此确保app的版权及">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png">
-<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/数字签名过程.png">
-<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/上传Appstore签名过程.png">
-<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign2.png">
-<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign3.png">
-<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign4.png">
-<meta property="og:updated_time" content="2017-09-20T08:04:43.000Z">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/source/image/sign/概念.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/source/image/sign/数字签名过程.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/source/image/sign/sign2.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/source/image/sign/sign3.png">
+<meta property="og:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/source/image/sign/sign4.png">
+<meta property="og:updated_time" content="2017-09-20T08:13:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="探究iOS签名机制">
 <meta name="twitter:description" content="iOS 签名机制比较复杂，各种证书，Provisioning Profile，entitlements，CertificateSigningRequest，p12，AppID，概念很多，也很容易出错，今天就讲讲这方面德一些东西，希望能有助于理解 iOS App 签名的原理和流程。 ####签名目的 苹果确保iOS平台对app有绝对的控制权，app只有通过其官方认证才能安装，以此确保app的版权及">
-<meta name="twitter:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png">
+<meta name="twitter:image" content="https://fengcommon.github.io/Users/commonfeng/CJFengBlog/source/image/sign/概念.png">
 
 
 
@@ -379,7 +378,7 @@
       
 
       
-        <p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/概念.png" alt="概念"></p>
+        <p><img src="/Users/commonfeng/CJFengBlog/source/image/sign/概念.png" alt="概念"></p>
 <p>iOS 签名机制比较复杂，各种证书，<strong>Provisioning Profile，entitlements，CertificateSigningRequest，p12，AppID，</strong>概念很多，也很容易出错，今天就讲讲这方面德一些东西，希望能有助于理解 iOS App 签名的原理和流程。</p>
 <p>####签名目的</p>
 <p>苹果确保iOS平台对app有绝对的控制权，app只有通过其官方认证才能安装，以此确保app的版权及安全</p>
@@ -400,7 +399,7 @@
 <p>#####签名过程</p>
 <p>通常我们说的签名就是指数字签名，它是基于非对称加密算法实现的。对指定内容使用哈希算法(一般是MD5)，得到一个固定长度的信息摘要，然后再使用私钥（注意必须是私钥）对该摘要加密，就得到了数字签名。</p>
 <p>简单理解就是我对某一份数据打个标记，表示我认可了这份数据（签了个名），然后我发送给其他人，其他人可以知道这份数据是经过我认证的，数据没有被篡改过。</p>
-<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/数字签名过程.png" alt="数字签名过程"></p>
+<p><img src="/Users/commonfeng/CJFengBlog/source/image/sign/数字签名过程.png" alt="数字签名过程"></p>
 <blockquote>
 <ul>
 <li><p>首先用一种算法，算出原始数据的摘要。需满足</p>
@@ -426,7 +425,7 @@
 </blockquote>
 <p>#####通过AppStore安装场景</p>
 <p>要实现这个需求很简单，最直接的方式，苹果官方生成一对公私钥，在 iOS 设备里内置一个公钥，私钥由苹果后台保存，我们传 App 上 AppStore 时，苹果后台用私钥对 APP 数据进行签名，iOS 设备下载这个 APP 后，用公钥验证这个签名，若签名正确，这个 APP 肯定是由苹果后台认证的，并且没有被修改过，也就达到了苹果的需求：保证安装的每一个 APP 都是经过苹果官方允许的。</p>
-<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/上传Appstore签名过程.png" alt="上传Appstore签名过程"></p>
+<p>![上传Appstore签名过程](/Users/commonfeng/CJFengBlog/source/image/sign/上传Appstore签名过程.png</p>
 <p>#####通过其他方式安装场景</p>
 <p>对于后面三种方式安装的 App 方式，苹果要进行控制，就有了新的需求，无法像上面这样简单了。对于开发时安装APP，它有两个需求：</p>
 <blockquote>
@@ -440,7 +439,7 @@
 </blockquote>
 <p>为了实现这些需求，iOS 签名的复杂度也就开始增加了。</p>
 <p>苹果这里给出的方案是使用了双层签名，会比较绕，流程大概是这样的：</p>
-<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign2.png" alt="sign2"></p>
+<p><img src="/Users/commonfeng/CJFengBlog/source/image/sign/sign2.png" alt="sign2"></p>
 <blockquote>
 <ul>
 <li>在你的 Mac 开发机器生成一对公私钥，这里称为<strong>公钥L</strong>，<strong>私钥L</strong>。L:Local</li>
@@ -453,9 +452,9 @@
 </blockquote>
 <p>上述流程只解决了上面第一个需求，也就是需要经过苹果允许才可以安装，还未解决第二个避免被滥用的问题。怎么解决呢？苹果再加了两个限制，一是限制在苹果后台注册过的设备才可以安装，二是限制签名只能针对某一个具体的 APP。<br>怎么加的？在上述第三步，苹果用私钥 A 签名我们本地公钥 L 时，实际上除了签名公钥 L，还可以加上无限多数据，这些数据都可以保证是经过苹果官方认证的，不会有被篡改的可能。</p>
 <p>可以想到把 允许安装的设备 ID 列表 和 App对应的 AppID 等数据，都在第三步这里跟公钥L一起组成证书，再用苹果私钥 A 对这个证书签名。在最后第 5 步验证时就可以拿到设备 ID 列表，判断当前设备是否符合要求。根据数字签名的原理，只要数字签名通过验证，第 5 步这里的设备 IDs / AppID / 公钥 L 就都是经过苹果认证的，无法被修改，苹果就可以限制可安装的设备和 APP，避免滥用。</p>
-<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign3.png" alt="sign3"></p>
+<p><img src="/Users/commonfeng/CJFengBlog/source/image/sign/sign3.png" alt="sign3"></p>
 <p>到这里这个证书已经变得很复杂了，有很多额外信息，实际上除了 设备 ID / AppID，还有其他信息也需要在这里用苹果签名，像这个 APP 里 iCloud / push / 后台运行 等权限苹果都想控制，苹果把这些权限开关统一称为<strong> Entitlements</strong>，它也需要通过签名去授权。<br>实际上一个“证书”本来就有规定的格式规范，上面我们把各种额外信息塞入证书里是不合适的，于是苹果另外搞了个东西，叫<strong> Provisioning Profile</strong>，一个 <strong>Provisioning Profile</strong> 里就包含了证书以及上述提到的所有额外信息，以及所有信息的签名。<br>所以整个流程稍微变一下，就变成这样了：</p>
-<p><img src="/Users/commonfeng/CJFengBlog/_MD/iOS签名机制/sign4.png" alt="sign4"></p>
+<p><img src="/Users/commonfeng/CJFengBlog/source/image/sign/sign4.png" alt="sign4"></p>
 <blockquote>
 <ul>
 <li>在你的 Mac 开发机器生成一对公私钥，这里称为公钥L，私钥L。L:Local</li>
